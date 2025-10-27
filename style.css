@@ -1,0 +1,211 @@
+:root {
+  --gap: 16px;
+  --card-w: 150px;
+  --card-h: 150px;
+  --radius: 14px;
+  --speed: 0.35s;
+  --shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --accent: #2b7cff;
+}
+
+/* Disposition principale */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: #f6f7fb;
+  color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100svh;
+  padding: 32px;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  max-width: 1400px;
+  width: 100%;
+}
+
+/* Nouvelle version : on aligne l’explication avec le plateau */
+.wrap {
+  flex: 1;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pour aligner la section “instructions” avec le plateau */
+.instructions {
+  flex: 0 0 300px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  border-radius: 14px;
+  padding: 20px;
+  line-height: 1.5;
+  align-self: flex-start; /* aligne sur le haut du plateau */
+  margin-top: 60px; /* 🔽 décale vers le bas pour s’aligner aux cartes */
+}
+
+
+/* Zone du jeu */
+.wrap {
+  flex: 1;
+  max-width: 900px;
+}
+
+/* Zone d’explications */
+.instructions {
+  flex: 0 0 300px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  border-radius: 14px;
+  padding: 20px;
+  line-height: 1.5;
+}
+.instructions h2 {
+  margin-top: 0;
+  color: var(--accent);
+}
+
+/* En-tête du jeu */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 👈 centre horizontalement le tout */
+  gap: 20px;               /* espace entre les éléments */
+  margin-bottom: 20px;     /* espace sous le header */
+  margin-top: -10px;       /* 👈 remonte légèrement le header */
+  text-align: center;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+}
+.stats {
+  display: flex;
+  gap: 16px;
+  font-size: 15px;
+  color: #333;
+}
+.stats b {
+  color: #000;
+}
+button {
+  appearance: none;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+/* Plateau du memory */
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, var(--card-w));
+  gap: var(--gap);
+  justify-content: center;
+}
+
+/* Cartes */
+.card {
+  width: var(--card-w);
+  height: var(--card-h);
+  perspective: 1000px;
+}
+.card .inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--speed) ease;
+  cursor: pointer;
+}
+.card.flipped .inner {
+  transform: rotateY(180deg);
+}
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+.face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.face.back {
+  transform: rotateY(0deg);
+}
+.face.front {
+  transform: rotateY(180deg);
+}
+
+/* Fin du jeu */
+.finished {
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 700;
+  color: #0a7a35;
+  display: none;
+}
+.finished.show {
+  display: block;
+}
+/* Texte d'explication affiché lors d'une paire trouvée */
+.found-info {
+  margin-top: 16px;
+  padding: 12px 8px 12px 0px; /* 👈 réduit le padding gauche à 8px */
+  background: #eef6ff;
+  border-left: 4px solid #2b7cff;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #222;
+  min-height: 40px;
+  transition: all 0.3s ease;
+}
+
+
+.found-info span {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .instructions {
+    max-width: 600px;
+  }
+}
+@media (max-width: 900px) {
+  :root {
+    --card-w: 120px;
+    --card-h: 120px;
+    --gap: 12px;
+  }
+}
+@media (max-width: 650px) {
+  :root {
+    --card-w: 90px;
+    --card-h: 90px;
+    --gap: 10px;
+  }
+}
