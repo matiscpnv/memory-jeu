@@ -21,6 +21,14 @@ const FRONT_IMAGES = [
     name: "Microsoft Excel, un tableur pour organiser et calculer ",
   },
   {
+    src: "./images/ordinateur.png",
+    name: "Ordinateur, appareil principal utilisé pour exécuter des logiciels, créer des documents et apprendre les bases de l’informatique.",
+  },
+  {
+    src: "./images/souris.png",
+    name: "Souris, permet de déplacer le curseur, cliquer et interagir avec les éléments à l’écran.",
+  },
+  {
     src: "./images/phpmyadmin.png",
     name: "PHPMyAdmin, un outil en ligne pour gérer facilement des bases de données MySQL.",
   },
@@ -34,6 +42,19 @@ const FRONT_IMAGES = [
 // Dimensions et totaux dynamiques basés sur les images disponibles
 let TOTAL_PAIRS = FRONT_IMAGES.length;
 let TOTAL_CARDS = TOTAL_PAIRS * 2;
+let LEVEL = "medium";
+const LEVELS = {
+  easy: { cols: 3, rows: 2, pairs: 3 },
+  medium: { cols: 4, rows: 3, pairs: 6 },
+  hard: { cols: 4, rows: 4, pairs: 8 },
+};
+
+function getLevelFromURL() {
+  const params = new URLSearchParams(location.search);
+  const lvl = params.get("level");
+  if (lvl && LEVELS[lvl]) return lvl;
+  return "medium";
+}
 
 // === RÉFÉRENCES DOM ===
 const boardEl = document.getElementById("board");
@@ -46,6 +67,7 @@ const resetBtn = document.getElementById("reset");
 const foundInfoEl = document.getElementById("found-info");
 
 let deck = [];
+let IMAGES_POOL = [];
 let firstCard = null;
 let secondCard = null;
 let lock = false;
@@ -63,8 +85,8 @@ function shuffle(arr) {
 
 // === CONSTRUCTION DU PLATEAU ===
 function buildDeck() {
-  const base = FRONT_IMAGES.slice(0, TOTAL_PAIRS);
-  deck = shuffle([...base, ...base]); // on duplique puis on mélange
+  const base = IMAGES_POOL.slice(0, TOTAL_PAIRS);
+  deck = shuffle([...base, ...base]);
 }
 
 function createCard(cardData, index) {
@@ -97,16 +119,14 @@ function createCard(cardData, index) {
   return card;
 }
 
-function computeGrid(totalCards) {
-  // Essaie d'approcher un carré (ex: 12 -> 4x3, 16 -> 4x4)
-  const cols = Math.ceil(Math.sqrt(totalCards));
-  const rows = Math.ceil(totalCards / cols);
-  return { cols, rows };
+function computeGridForLevel() {
+  const cfg = LEVELS[LEVEL];
+  return { cols: cfg.cols, rows: cfg.rows };
 }
 
 function renderBoard() {
   boardEl.innerHTML = "";
-  const { cols } = computeGrid(deck.length);
+  const { cols } = computeGridForLevel();
   boardEl.style.gridTemplateColumns = `repeat(${cols}, var(--card-w))`;
   deck.forEach((cardData, i) => boardEl.appendChild(createCard(cardData, i)));
 }
@@ -188,9 +208,35 @@ function preloadImages(urls) {
 
 function startGame() {
   resetStats();
-  TOTAL_PAIRS = FRONT_IMAGES.length;
+  LEVEL = getLevelFromURL();
+  const cfg = LEVELS[LEVEL];
+  // Si pas assez d'images pour ce niveau, on rétrograde au niveau inférieur possible
+  const maxPairsAvailable = FRONT_IMAGES.length;
+  let targetPairs = cfg.pairs;
+  if (targetPairs > maxPairsAvailable) {
+    if (maxPairsAvailable >= LEVELS.medium.pairs) {
+      LEVEL = "medium";
+    } else if (maxPairsAvailable >= LEVELS.easy.pairs) {
+      LEVEL = "easy";
+    } else {
+      // Dernier recours: limiter au maxPairsAvailable
+      LEVEL = "easy";
+    }
+  }
+
+  const finalCfg = LEVELS[LEVEL];
+  TOTAL_PAIRS = Math.min(finalCfg.pairs, FRONT_IMAGES.length);
   TOTAL_CARDS = TOTAL_PAIRS * 2;
   if (totalPairsEl) totalPairsEl.textContent = TOTAL_PAIRS;
+  // Construire le pool d'images pour ce niveau
+  IMAGES_POOL = FRONT_IMAGES.slice();
+  // Pour le niveau difficile, si on n'a pas assez d'images uniques, on réutilise l'ordinateur
+  if (LEVEL === "hard" && IMAGES_POOL.length < finalCfg.pairs) {
+    const ordinateur = { src: "./images/ordinateur.png", name: "Ordinateur" };
+    while (IMAGES_POOL.length < finalCfg.pairs) {
+      IMAGES_POOL.push(ordinateur);
+    }
+  }
   buildDeck();
   renderBoard();
   preloadImages([BACK_IMAGE, ...FRONT_IMAGES.map((c) => c.src)]);
@@ -232,8 +278,8 @@ function savePlayerScore() {
     date: new Date().toISOString(),
   };
 
-  // 🔥 Envoie sur Firebase
-  db.ref("scores").push(scoreData, (err) => {
+  // 🔥 Envoie sur Firebase (par niveau)
+  db.ref(`scores/${LEVEL}`).push(scoreData, (err) => {
     if (err) {
       alert("Erreur lors de l’enregistrement du score : " + err);
     } else {
@@ -244,7 +290,7 @@ function savePlayerScore() {
 
 // Affiche le classement global (Top 10)
 function showLeaderboard() {
-  db.ref("scores")
+  db.ref(`scores/${LEVEL}`)
     .orderByChild("score")
     .limitToFirst(10)
     .once("value", (snapshot) => {
@@ -255,7 +301,7 @@ function showLeaderboard() {
         return;
       }
 
-      let html = "<h3>🏆 Classement</h3><ol>";
+      let html = `<h3>🏆 Classement (${LEVEL})</h3><ol>`;
       Object.values(data).forEach((item) => {
         html += `<li><b>${item.name}</b> — ${item.score} coups</li>`;
       });

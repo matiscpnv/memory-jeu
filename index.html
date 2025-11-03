@@ -8,62 +8,35 @@
   </head>
 
   <body>
-    <div class="container">
-      <!-- Partie gauche : le jeu -->
-      <div class="wrap">
-        <main class="board" id="board" aria-label="Plateau de memory"></main>
-
-        <p id="finished" class="finished">
-          🎉 Bravo ! Tout est trouvé en <span id="moves2">0</span> coups.
-        </p>
-      </div>
-
-      <!-- Partie droite : explications -->
-      <aside class="instructions">
+    <div class="container" style="justify-content: center">
+      <div class="wrap" style="max-width: 900px">
         <header>
-          <h1>Memory</h1>
-          <div class="stats">
-            <div>Coups : <b id="moves">0</b></div>
-            <div>Paires : <b id="pairs">0</b>/<b id="totalPairs">0</b></div>
-          </div>
-          <button id="reset">Rejouer</button>
+          <h1 style="font-size: 56px">Memory</h1>
         </header>
-
-        <h2>Comment jouer ?</h2>
-        <p>
-          Le but du jeu est de retrouver toutes les paires d’images identiques.
-        </p>
-        <!-- Zone où s’affichent les infos ou le classement -->
-        <div id="found-info" class="found-info"></div>
-      </aside>
+        <main
+          class="board"
+          aria-label="Choix du niveau"
+          style="
+            box-shadow: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <div id="level-buttons">
+            <button onclick="location.href='game.html?level=easy'">
+              Facile : 3×2
+            </button>
+            <button onclick="location.href='game.html?level=medium'">
+              Moyen : 4×3
+            </button>
+            <button onclick="location.href='game.html?level=hard'">
+              Difficile : 4×4
+            </button>
+          </div>
+        </main>
+      </div>
     </div>
-
-    <!-- === 🔥 SDK Firebase (version navigateur) === -->
-    <!-- ⚙️ Firebase SDK (version compat, fonctionne dans une page HTML simple) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-    <script>
-      // === CONFIGURATION DE TON PROJET FIREBASE ===
-      const firebaseConfig = {
-        apiKey: "AIzaSyBYLh_Jc6DR9weLYhwvO-ZFouPHf7LVyG0",
-        authDomain: "coloriage-collectif.firebaseapp.com",
-        databaseURL:
-          "https://coloriage-collectif-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "coloriage-collectif",
-        storageBucket: "coloriage-collectif.firebasestorage.app",
-        messagingSenderId: "841791568628",
-        appId: "1:841791568628:web:9f3fd7a28461fd8c17fca1",
-        measurementId: "G-7KV288M6EW",
-      };
-
-      // === Initialisation Firebase ===
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-      window.db = db; // 👉 accessible dans script.js
-    </script>
-
-    <!-- === Ton script du jeu === -->
-    <script src="script.js"></script>
   </body>
 </html>
