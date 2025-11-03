@@ -15,7 +15,7 @@
 
 /* Disposition principale */
 body {
-  margin: 0 auto;
+  margin: 0;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   background: linear-gradient(135deg, #e8d5b7 0%, #d4c5a0 50%, #c4b098 100%);
   background-attachment: fixed;
@@ -23,8 +23,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100svh;
-  padding: 5px;
+  height: 100vh; /* ✅ prend toute la hauteur */
+  padding: 0;
   position: relative;
 }
 
@@ -37,6 +37,45 @@ body::before {
     repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(212, 175, 55, 0.05) 2px, rgba(212, 175, 55, 0.05) 4px);
   pointer-events: none;
   z-index: 0;
+}
+#level-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* ✅ centre horizontalement */
+  align-items: center;      /* ✅ centre verticalement */
+  gap: 24px;
+  text-align: center;
+}
+#level-buttons button {
+  appearance: none;
+  border: 0;
+  background: linear-gradient(to bottom, #d4af37 0%, #b8941f 100%);
+  color: #1e3a5f;
+  padding: 14px 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 2px #8b6914;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+#level-buttons button:hover {
+  background: linear-gradient(to bottom, #e5c04a 0%, #c9a52a 100%);
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 2px #8b6914;
+}
+
+#level-buttons button:active {
+  transform: translateY(0);
 }
 
 .container {
@@ -123,7 +162,30 @@ header {
   position: relative;
 }
 
+/* Bouton RETOUR */
+nav {
+  margin-top: 20px;
+  text-align: center;
+}
 
+nav a {
+  display: inline-block;
+  background: linear-gradient(to right, #1e3a5f, #2c5282);
+  color: #d4af37;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 2px #d4af37;
+  border: none;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
 
 h1 {
   font-size: 26px;
