@@ -1,31 +1,45 @@
 // === À PERSONNALISER ===
 // Image du dos des cartes
-const BACK_IMAGE = "./images/back.png"; // ← ton image ici
+const BACK_IMAGE = "images/recto.png"; // ← ton image ici
 
-// 10 images de face (une par paire) avec leurs noms / emojis
+// Images de face (une par paire) avec leurs noms / descriptions
 const FRONT_IMAGES = [
-  { src: "./images/chien.png", name: "chien 🐶" },
-  { src: "./images/chat.png", name: "chat 🐱" },
-  { src: "./images/pomme.png", name: "pomme 🍎" },
-  { src: "./images/soleil.png", name: "soleil ☀️" },
-  { src: "./images/fleur.png", name: "fleur 🌸" },
-  { src: "./images/voiture.png", name: "voiture 🚗" },
-  { src: "./images/livre.png", name: "livre 📘" },
-  { src: "./images/musique.png", name: "note de musique 🎵" },
-  { src: "./images/maison.png", name: "maison 🏠" },
-  { src: "./images/coeur.png", name: "cœur ❤️" },
+  {
+    src: "./images/indesign.png",
+    name: "Adobe InDesign, utilisé pour la mise en page de documents professionnels comme des magazines ou des affiches.",
+  },
+  {
+    src: "./images/illustrator.png",
+    name: "Adobe Illustrator, un logiciel de création d’illustrations vectorielles et de graphismes.",
+  },
+  {
+    src: "./images/html.png",
+    name: "HTML, qui sert à structurer le contenu d’une page web.",
+  },
+  {
+    src: "./images/excel.png",
+    name: "Microsoft Excel, un tableur pour organiser et calculer ",
+  },
+  {
+    src: "./images/phpmyadmin.png",
+    name: "PHPMyAdmin, un outil en ligne pour gérer facilement des bases de données MySQL.",
+  },
+  {
+    src: "./images/photoshop.png",
+    name: "Adobe Photoshop, un logiciel utilisé pour retoucher des images, créer des montages et concevoir des visuels graphiques.",
+  },
 ];
 // === Fin de la zone à personnaliser ===
 
-const GRID_COLS = 5,
-  GRID_ROWS = 4; // 5×4 = 20 cartes
-const TOTAL_CARDS = GRID_COLS * GRID_ROWS;
-const TOTAL_PAIRS = TOTAL_CARDS / 2;
+// Dimensions et totaux dynamiques basés sur les images disponibles
+let TOTAL_PAIRS = FRONT_IMAGES.length;
+let TOTAL_CARDS = TOTAL_PAIRS * 2;
 
 // === RÉFÉRENCES DOM ===
 const boardEl = document.getElementById("board");
 const movesEl = document.getElementById("moves");
 const pairsEl = document.getElementById("pairs");
+const totalPairsEl = document.getElementById("totalPairs");
 const finishedEl = document.getElementById("finished");
 const moves2El = document.getElementById("moves2");
 const resetBtn = document.getElementById("reset");
@@ -83,8 +97,17 @@ function createCard(cardData, index) {
   return card;
 }
 
+function computeGrid(totalCards) {
+  // Essaie d'approcher un carré (ex: 12 -> 4x3, 16 -> 4x4)
+  const cols = Math.ceil(Math.sqrt(totalCards));
+  const rows = Math.ceil(totalCards / cols);
+  return { cols, rows };
+}
+
 function renderBoard() {
   boardEl.innerHTML = "";
+  const { cols } = computeGrid(deck.length);
+  boardEl.style.gridTemplateColumns = `repeat(${cols}, var(--card-w))`;
   deck.forEach((cardData, i) => boardEl.appendChild(createCard(cardData, i)));
 }
 
@@ -165,6 +188,9 @@ function preloadImages(urls) {
 
 function startGame() {
   resetStats();
+  TOTAL_PAIRS = FRONT_IMAGES.length;
+  TOTAL_CARDS = TOTAL_PAIRS * 2;
+  if (totalPairsEl) totalPairsEl.textContent = TOTAL_PAIRS;
   buildDeck();
   renderBoard();
   preloadImages([BACK_IMAGE, ...FRONT_IMAGES.map((c) => c.src)]);
@@ -229,7 +255,7 @@ function showLeaderboard() {
         return;
       }
 
-      let html = "<h3>🏆 Classement mondial</h3><ol>";
+      let html = "<h3>🏆 Classement</h3><ol>";
       Object.values(data).forEach((item) => {
         html += `<li><b>${item.name}</b> — ${item.score} coups</li>`;
       });
@@ -247,13 +273,3 @@ if (FRONT_IMAGES.length === 0) {
   FRONT_IMAGES.push(...demo);
 }
 startGame();
-// 🧪 Appuyer sur "G" pour gagner instantanément (mode test)
-document.addEventListener("keydown", (e) => {
-  if (e.key.toLowerCase() === "g") {
-    foundPairs = TOTAL_PAIRS;
-    movesEl.textContent = moves;
-    pairsEl.textContent = foundPairs;
-    finishedEl.classList.add("show");
-    showEndScreen();
-  }
-});
