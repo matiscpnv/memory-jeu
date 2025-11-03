@@ -157,9 +157,11 @@ header {
   margin-top: 0px;
   text-align: center;
   padding: 20px;
-  background: linear-gradient(to right, #1e3a5f 0%, #2c5282 50%, #1e3a5f 100%);
   border-radius: 2px;
   position: relative;
+}
+#header-acceuil {
+  background: linear-gradient(to right, #1e3a5f 0%, #2c5282 50%, #1e3a5f 100%);
 }
 
 /* Bouton RETOUR */
